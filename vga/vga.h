@@ -19,5 +19,6 @@ typedef struct vga_state {
 void k_vga_putc(const char c, int code, int idx, vga_t *buff);
 void k_vga_print(const char *str, vga_state_t *state);
 vga_state_t k_vga_init(vga_t *buff);
+void k_vga_clear(vga_state_t *state);
 
 #endif

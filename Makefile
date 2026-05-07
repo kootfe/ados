@@ -1,7 +1,7 @@
 AS = as
 CC = gcc
 LD = ld
-CFLAGS = -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mcmodel=kernel -m64 -c
+CFLAGS = -ffreestanding -nostdlib -fno-pie -fno-stack-protector -mcmodel=kernel -m64 -c -O0
 ASFLAGS = --64
 LDFLAGS = -n -T linker.ld
 ISO_DIR = iso
@@ -34,7 +34,7 @@ ado.iso: kernel.elf $(GRUB_DIR)/grub.cfg
 	grub-mkrescue -o $@ $(ISO_DIR)
 
 run: ado.iso
-	qemu-system-x86_64 -cdrom ado.iso
+	qemu-system-x86_64 -cdrom ado.iso -serial stdio
 
 clean:
 	rm -rf $(BUILD_DIR) *.elf *.iso

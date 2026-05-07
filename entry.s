@@ -144,6 +144,7 @@ _start:
 /**************** LONG MODE ****************/
 .code64
 long_mode_start:
+    sti
     lea stack_top(%rip), %rsp
     and $-16, %rsp
 
