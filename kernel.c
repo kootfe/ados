@@ -11,7 +11,7 @@
 int PIT_FREQ = 100;
 
 vga_state_t kernel_vga;
-void kmain()
+void kmain(uint64_t mb2_info_phys)
 {
     kernel_vga = k_vga_init((vga_t *)0xB8000);
     k_vga_clear(&kernel_vga);
