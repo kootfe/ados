@@ -186,10 +186,10 @@ void shell_feed(char c)
     }
     else if (c == '\b')
     {
-        return;
-        /*       if (buff_pos > 0) {
-                   buf_pos
-               }*/
+        if (buff_pos > 0) {
+            buff_pos--;
+            kprintf("\b \b");
+        }
     }
     else
     {
