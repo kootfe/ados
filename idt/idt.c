@@ -20,7 +20,7 @@ static void idt_set_gate(int n, void *handler) {
 extern void lidt(void*);
 
 void idt_init() {
-    for (int i = 0; i < 32; ++i)
+    for (int i = 0; i < 49; ++i)
         idt_set_gate(i, isr_stub_table[i]);
 
     idt_desc.limit = sizeof(idt) - 1;

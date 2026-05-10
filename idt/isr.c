@@ -1,5 +1,10 @@
-#include <stdint.h>
+#include "../io/keyboard.h"
+#include "../io/pic.h"
 #include "../io/term.h"
+#include "idt.h"
+#include <stdint.h>
+
+volatile uint64_t ticks = 0;
 
 static const char *excv_name[] = {
     "Divide by Zero",       // 0
@@ -36,24 +41,46 @@ static const char *excv_name[] = {
     "Security Exception",   // 31
 };
 
-void isr_handler(int n, uint64_t err) {
+void isr_handler(isr_frame_t *frame)
+{
+    if (frame->vector > 49)
+    {
+        kprintf("BAD FRAME: vector=%u err=%u\n", frame->vector, frame->err);
+        for (;;)
+            __asm__("cli;hlt");
+    }
+
+    int n = (int)frame->vector;
+    uint64_t err = frame->err;
+    if (n >= 32 && n <= 47)
+    {
+        if (n == 32)
+        {
+            ticks++;
+        }
+        else if (n == 33)
+        {
+            keyboard_handler();
+        }
+
+        pic_eoi(n - 32);
+        return;
+    }
     kprintf("\n--- EXCEPTION ---\n");
     kprintf("Name: %s\n", n < 32 ? excv_name[n] : "Unknown");
     kprintf("Vector: %d\n", n);
     kprintf("Error: %x\n", err);
 
-    if (n == 14) {
+    if (n == 14)
+    {
         uint64_t cr2;
-        __asm__ volatile ("mov %%cr2, %0" : "=r"(cr2));
+        __asm__ volatile("mov %%cr2, %0" : "=r"(cr2));
         kprintf("CR2: %p\n", cr2);
-        kprintf("Reason: %s%s%s%s%s\n",
-                err & 0x1 ? "Protection" : "not-present",
-                err & 0x2 ? " write" : " read",
-                err & 0x4 ? " user" : " kernel",
-                err & 0x8 ? " rsvd-bit" : "",
-                err & 0x10 ? " fetch" : ""
-        );
+        kprintf("Reason: %s%s%s%s%s\n", err & 0x1 ? "Protection" : "not-present",
+                err & 0x2 ? " write" : " read", err & 0x4 ? " user" : " kernel",
+                err & 0x8 ? " rsvd-bit" : "", err & 0x10 ? " fetch" : "");
     }
     kprintf("---------------------\n");
-    for (;;) __asm__ volatile ("cli; hlt");
+    for (;;)
+        __asm__ volatile("cli; hlt");
 }

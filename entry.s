@@ -63,6 +63,19 @@ _start:
     /* stack */
     mov $stack_top, %esp
 
+    call 1f
+1:
+    pop %ebx
+    lea __bss_start - 1b(%ebx), %edi
+    mov $__bss_start, %edi
+    mov $__bss_end, %ecx
+    sub %edi, %ecx
+    shr $2, %ecx
+    xor %eax, %eax
+    cld
+    rep stosl
+
+
     /* zero page tables */
     xor %eax, %eax
     cld
@@ -144,7 +157,12 @@ _start:
 /**************** LONG MODE ****************/
 .code64
 long_mode_start:
-    sti
+    mov $0x10, %ax
+    mov %ax, %ds
+    mov %ax, %es
+    mov %ax, %ss
+    mov %ax, %fs
+    mov %ax, %gs
     lea stack_top(%rip), %rsp
     and $-16, %rsp
 

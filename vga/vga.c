@@ -1,5 +1,6 @@
 #include "vga.h"
 #include <stdint.h>
+#include "../helpers/helper.h"
 
 static void vga_scroll(vga_state_t *state) {
   if (state->row < ROWS)
@@ -13,10 +14,6 @@ static void vga_scroll(vga_state_t *state) {
   }
 
   state->row = ROWS - 1;
-}
-
-static inline void outb(uint16_t port, uint8_t val) {
-    __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
 }
 
 static void vga_update_cursor(int row, int col) {
