@@ -8,7 +8,7 @@
 #include "vga/vga.h"
 #include <stdint.h>
 
-#define PIT_FREQ 100
+int PIT_FREQ = 100;
 
 vga_state_t kernel_vga;
 void kmain()
